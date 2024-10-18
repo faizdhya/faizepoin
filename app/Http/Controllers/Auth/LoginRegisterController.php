@@ -53,6 +53,23 @@ class LoginRegisterController extends Controller
 
         ]);
 
+        if(Auth::attemp($credentials)){
+            $request->session()->regenerate();
+            if($request->user()->usertype == 'admin'){
+                return redirect('admin/dashboard')->withSuccess('You have successfully logged in');
+            }
+        }
+
+        return back()->withErrors([
+            'email' => 'Your provided credentials do not match in our records.',
+        ])->onlyinput('email');
     }
-    //
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('login')->withSuccess('You have logged out successfully');
+    }
 }
